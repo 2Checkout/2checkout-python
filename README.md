@@ -6,7 +6,7 @@ This library provides developers with a simple set of bindings to the 2Checkout 
 To use, download or clone the repository.
 
 ```shell
-git clone https://github.com/craigchristenson/2checkout-python.git
+git clone https://github.com/2checkout/2checkout-python.git
 ```
 
 Install _(Or just import in your script.)_
@@ -22,7 +22,7 @@ Import in your script
 import twocheckout
 ```
 
-Full documentation for each binding will be provided in the [Wiki](https://github.com/craigchristenson/2checkout-python/wiki).
+Full documentation for each binding will be provided in the [Wiki](https://github.com/2checkout/2checkout-python/wiki).
 
 
 Example API Usage
