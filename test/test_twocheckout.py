@@ -19,8 +19,7 @@ EXAMPLE_PRODUCT = {
 EXAMPLE_OPTION = {
     'option_name': 'Example Option',
     'option_value_name': 'Test',
-    'option_value_surcharge': 1.00,
-
+    'option_value_surcharge': 1.00
 }
 
 EXAMPLE_COUPON = {
@@ -71,19 +70,19 @@ class SaleTest(TwocheckoutTestCase):
     def setUp(self):
         super(SaleTest, self).setUp()
 
-    def test_find_sale(self):
+    def test_1_find_sale(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             self.assertEqual(int(sale.sale_id), 4774380224)
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Unable to find record.")
 
-    def test_list_sale(self):
+    def test_2_list_sale(self):
         params = {'pagesize': 3}
         list = twocheckout.Sale.list(params)
         self.assertEqual(len(list), 3)
 
-    def test_refund_sale(self):
+    def test_3_refund_sale(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             result = sale.refund(EXAMPLE_REFUND)
@@ -91,7 +90,7 @@ class SaleTest(TwocheckoutTestCase):
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Invoice was already refunded.")
 
-    def test_refund_invoice(self):
+    def test_4_refund_invoice(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             invoice = sale.invoices[0]
@@ -100,7 +99,7 @@ class SaleTest(TwocheckoutTestCase):
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Invoice was already refunded.")
 
-    def test_refund_lineitem(self):
+    def test_5_refund_lineitem(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             invoice = sale.invoices[0]
@@ -110,35 +109,39 @@ class SaleTest(TwocheckoutTestCase):
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Lineitem was already refunded.")
 
-    def test_stop(self):
-#        sale stop
+    def test_6_stop_sale(self):
         sale = twocheckout.Sale.find(EXAMPLE_SALE)
         result = sale.stop()
         self.assertEqual(result.response_message, "No active recurring lineitems")
-#        invoice stop
+
+    def test_7_stop_invoice(self):
+        sale = twocheckout.Sale.find(EXAMPLE_SALE)
         invoice = sale.invoices[0]
         result = invoice.stop()
         self.assertEqual(result.response_message, "No active recurring lineitems")
-#        lineitem stop
+
+    def test_6_stop_sale(self):
+        sale = twocheckout.Sale.find(EXAMPLE_SALE)
+        invoice = sale.invoices[0]
         try:
             lineitem = invoice.lineitems[0]
             result = lineitem.stop()
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Lineitem is not scheduled to recur.")
 
-    def test_comment(self):
+    def test_7_comment(self):
         sale = twocheckout.Sale.find(EXAMPLE_SALE)
         result = sale.comment(EXAMPLE_COMMENT)
         self.assertEqual(result.response_message, "Created comment successfully.")
 
-    def test_ship(self):
+    def test_8_ship(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             result = sale.ship(EXAMPLE_SHIP)
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Sale already marked shipped.")
 
-    def test_reauth(self):
+    def test_9_reauth(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             sale.reauth()
@@ -149,23 +152,27 @@ class ProductTest(TwocheckoutTestCase):
     def setUp(self):
         super(ProductTest, self).setUp()
 
-    def test_crud(self):
-#        create
+    def test_1_create(self):
         result = twocheckout.Product.create(EXAMPLE_PRODUCT)
         self.assertEqual(result.response_message, "Product successfully created")
-#        find
         EXAMPLE_PRODUCT['product_id'] = result.product_id
+
+    def test_2_find(self):
         product = twocheckout.Product.find(EXAMPLE_PRODUCT)
         self.assertEqual(product.name, "Example Product")
-#        update
+
+    def test_3_update(self):
+        product = twocheckout.Product.find(EXAMPLE_PRODUCT)
         EXAMPLE_PRODUCT['name'] = "Updated Name"
         product = product.update(EXAMPLE_PRODUCT)
         self.assertEqual(product.name, "Updated Name")
-#        delete
+
+    def test_4_delete(self):
+        product = twocheckout.Product.find(EXAMPLE_PRODUCT)
         result = product.delete(EXAMPLE_PRODUCT)
         self.assertEqual(result.response_message, "Product successfully deleted.")
 
-    def test_list(self):
+    def test_5_list(self):
         params = {'pagesize': 3}
         list = twocheckout.Product.list(params)
         self.assertEqual(len(list), 3)
@@ -174,28 +181,28 @@ class OptionTest(TwocheckoutTestCase):
     def setUp(self):
         super(OptionTest, self).setUp()
 
-    def test_crud(self):
-#        create
+    def test_1_create(self):
         result = twocheckout.Option.create(EXAMPLE_OPTION)
         self.assertEqual(result.response_message, "Option created successfully")
-#        find
         EXAMPLE_OPTION['option_id'] = result.option_id
+
+    def test_2_find(self):
         option = twocheckout.Option.find(EXAMPLE_OPTION)
         self.assertEqual(option.option_name, "Example Option")
-#        update
+
+    def test_3_update(self):
+        option = twocheckout.Option.find(EXAMPLE_OPTION)
         params = dict()
         params['option_name'] = "Updated Name"
-        params['option_id'] = option.option_id
-        params['option_value_id'] = option.option_values[0].option_value_id
-        params['option_value_name'] = option.option_values[0].option_value_name
-        params['option_value_surcharge'] = option.option_values[0].option_value_surcharge
         option = option.update(params)
         self.assertEqual(option.option_name, "Updated Name")
-#        delete
+
+    def test_4_delete(self):
+        option = twocheckout.Option.find(EXAMPLE_OPTION)
         result = option.delete(EXAMPLE_OPTION)
         self.assertEqual(result.response_message, "Option deleted successfully")
 
-    def test_list(self):
+    def test_5_list(self):
         params = {'pagesize': 3}
         list = twocheckout.Option.list(params)
         self.assertEqual(len(list), 3)
@@ -204,19 +211,23 @@ class CouponTest(TwocheckoutTestCase):
     def setUp(self):
         super(CouponTest, self).setUp()
 
-    def test_crud(self):
-#        create
+    def test_1_create(self):
         result = twocheckout.Coupon.create(EXAMPLE_COUPON)
-        self.assertEqual(result.response_message, "Coupon successfully created")
-#        find
         EXAMPLE_COUPON['coupon_code'] = result.coupon_code
+        self.assertEqual(result.response_message, "Coupon successfully created")
+
+    def test_2_find(self):
         coupon = twocheckout.Coupon.find(EXAMPLE_COUPON)
-        self.assertEqual(coupon.coupon_code, result.coupon_code)
-#        update
+        self.assertEqual(coupon.coupon_code, EXAMPLE_COUPON['coupon_code'])
+
+    def test_3_update(self):
+        coupon = twocheckout.Coupon.find(EXAMPLE_COUPON)
         EXAMPLE_COUPON['date_expire'] = "2020-01-02"
         coupon = coupon.update(EXAMPLE_COUPON)
         self.assertEqual(coupon.date_expire, "2020-01-02")
-#        delete
+
+    def test_4_delete(self):
+        coupon = twocheckout.Coupon.find(EXAMPLE_COUPON)
         result = coupon.delete(EXAMPLE_COUPON)
         self.assertEqual(result.response_message, "Coupon successfully deleted.")
 
@@ -224,7 +235,7 @@ class CompanyTest(TwocheckoutTestCase):
     def setUp(self):
         super(CompanyTest, self).setUp()
 
-    def test_retrieve(self):
+    def test_1_retrieve(self):
         company = twocheckout.Company.retrieve()
         self.assertEqual(company.vendor_id, "1817037")
 
@@ -232,7 +243,7 @@ class ContactTest(TwocheckoutTestCase):
     def setUp(self):
         super(ContactTest, self).setUp()
 
-    def test_create(self):
+    def test_1_create(self):
         contact = twocheckout.Contact.retrieve()
         self.assertEqual(contact.vendor_id, "1817037")
 
@@ -240,7 +251,7 @@ class PassbackTest(TwocheckoutTestCase):
     def setUp(self):
         super(PassbackTest, self).setUp()
 
-    def test_check(self):
+    def test_1_check(self):
         params = EXAMPLE_PASSBACK
         result = twocheckout.Passback.check(params)
         self.assertEqual(result.response_code, "SUCCESS")
@@ -249,7 +260,7 @@ class NotificationTest(TwocheckoutTestCase):
     def setUp(self):
         super(NotificationTest, self).setUp()
 
-    def test_check(self):
+    def test_1_check(self):
         params = EXAMPLE_NOTIFICATION
         result = twocheckout.Notification.check(params)
         self.assertEqual(result.response_code, "SUCCESS")
