@@ -1,7 +1,7 @@
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import json
-from error import TwocheckoutError
+from .error import TwocheckoutError
 
 
 class Api:
@@ -23,18 +23,22 @@ class Api:
         }
         base_url = 'https://www.2checkout.com/api/'
         url = base_url + method
-        data = urllib.urlencode(params)
-        password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        data = urllib.parse.urlencode(params)
+        password_manager = urllib.request.HTTPPasswordMgrWithDefaultRealm()
         password_manager.add_password(
             None, 'https://www.2checkout.com', username, password
         )
-        auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
-        opener = urllib2.build_opener(auth_handler)
-        urllib2.install_opener(opener)
+        auth_handler = urllib.request.HTTPBasicAuthHandler(password_manager)
+        opener = urllib.request.build_opener(auth_handler)
+        urllib.request.install_opener(opener)
         try:
-            req = urllib2.Request(url, data, headers)
-            result = urllib2.urlopen(req).read()
+            binary_data = data.encode('ascii')
+            req = urllib.request.Request(url, binary_data, headers)
+            raw_data = urllib.request.urlopen(req).read()
+            result = raw_data.decode('utf-8')
             return json.loads(result)
-        except urllib2.HTTPError, e:
-            exception = json.loads(e.read())
+        except urllib.error.HTTPError as e:
+            raw_data = e.read()
+            result = raw_data.decode('utf-8')
+            exception = json.loads(result)
             raise TwocheckoutError(exception['errors'][0]['code'], exception['errors'][0]['message'])

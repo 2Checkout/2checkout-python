@@ -75,7 +75,7 @@ class SaleTest(TwocheckoutTestCase):
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             self.assertEqual(int(sale.sale_id), 4774380224)
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Unable to find record.")
+            self.assertEqual(error.msg, "Unable to find record.")
 
     def test_2_list_sale(self):
         params = {'pagesize': 3}
@@ -88,16 +88,16 @@ class SaleTest(TwocheckoutTestCase):
             result = sale.refund(EXAMPLE_REFUND)
             self.assertEqual(result.message, "refund added to invoice")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Invoice was already refunded.")
+            self.assertEqual(error.msg, "Invoice too old to refund.")
 
     def test_4_refund_invoice(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             invoice = sale.invoices[0]
             result = invoice.refund(EXAMPLE_REFUND)
-            self.assertEqual(result.message, "refund added to invoice")
+            self.assertEqual(result.msg, "refund added to invoice")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Invoice was already refunded.")
+            self.assertEqual(error.msg, "Invoice too old to refund.")
 
     def test_5_refund_lineitem(self):
         try:
@@ -107,7 +107,7 @@ class SaleTest(TwocheckoutTestCase):
             result = lineitem.refund(EXAMPLE_REFUND)
             self.assertEqual(result.message, "lineitem refunded")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Lineitem was already refunded.")
+            self.assertEqual(error.msg, "Lineitem was already refunded.")
 
     def test_6_stop_sale(self):
         sale = twocheckout.Sale.find(EXAMPLE_SALE)
@@ -127,7 +127,7 @@ class SaleTest(TwocheckoutTestCase):
             lineitem = invoice.lineitems[0]
             result = lineitem.stop()
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Lineitem is not scheduled to recur.")
+            self.assertEqual(error.msg, "Lineitem is not scheduled to recur.")
 
     def test_7_comment(self):
         sale = twocheckout.Sale.find(EXAMPLE_SALE)
@@ -139,14 +139,14 @@ class SaleTest(TwocheckoutTestCase):
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             result = sale.ship(EXAMPLE_SHIP)
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Sale already marked shipped.")
+            self.assertEqual(error.msg, "Sale already marked shipped.")
 
     def test_9_reauth(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             sale.reauth()
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Payment is already pending or deposited and cannot be reauthorized.")
+            self.assertEqual(error.msg, "Payment is already pending or deposited and cannot be reauthorized.")
 
 class ProductTest(TwocheckoutTestCase):
     def setUp(self):
@@ -246,6 +246,18 @@ class ContactTest(TwocheckoutTestCase):
     def test_1_create(self):
         contact = twocheckout.Contact.retrieve()
         self.assertEqual(contact.vendor_id, "1817037")
+
+class PaymentTest(TwocheckoutTestCase):
+    def setUp(self):
+        super(PaymentTest, self).setUp()
+
+    def test_1_pending(self):
+        payment = twocheckout.Payment.pending()
+        self.assertEqual(payment.release_level, "100")
+
+    def test_2_list(self):
+        payments = twocheckout.Payment.list()
+        self.assertEqual(len(payments), 0)
 
 class PassbackTest(TwocheckoutTestCase):
     def setUp(self):

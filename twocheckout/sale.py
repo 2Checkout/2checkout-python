@@ -1,6 +1,6 @@
-from api_request import Api
-from util import Util
-from twocheckout import Twocheckout
+from .api_request import Api
+from .util import Util
+from .twocheckout import Twocheckout
 
 
 class Sale(Twocheckout):
@@ -24,10 +24,10 @@ class Sale(Twocheckout):
     def refund(self, params=None):
         if params is None:
             params = dict()
-        if hasattr(self, 'lineitem_id'):
+        if 'lineitem_id' in self:
             params['lineitem_id'] = self.lineitem_id
             url = 'sales/refund_lineitem'
-        elif hasattr(self, 'invoice_id'):
+        elif 'invoice_id' in self:
             params['invoice_id'] = self.invoice_id
             url = 'sales/refund_invoice'
         else:
@@ -38,15 +38,15 @@ class Sale(Twocheckout):
     def stop(self, params=None):
         if params is None:
             params = dict()
-        if hasattr(self, 'lineitem_id'):
+        if 'lineitem_id' in self:
             params['lineitem_id'] = self.lineitem_id
             return Api.call('sales/stop_lineitem_recurring', params)
-        elif hasattr(self, 'sale_id'):
+        elif 'sale_id' in self:
             active_lineitems = Util.active(self)
             if dict(active_lineitems):
                 result = dict()
                 i = 0
-                for k, v in active_lineitems.items():
+                for k, v in list(active_lineitems.items()):
                     lineitem_id = v
                     params = {'lineitem_id': lineitem_id}
                     result[i] = Api.call('sales/stop_lineitem_recurring', params)
@@ -70,7 +70,7 @@ class Sale(Twocheckout):
         if dict(active_lineitems):
             result = dict()
             i = 0
-            for k, v in active_lineitems.items():
+            for k, v in list(active_lineitems.items()):
                 lineitem_id = v
                 result[i] = lineitem_id
                 i += 1

@@ -1,4 +1,4 @@
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 class Charge:
@@ -26,6 +26,6 @@ class Charge:
     def link(cls, params=None, url="https://www.2checkout.com/checkout/spurchase?"):
         if params is None:
             params = dict()
-        param = urllib.urlencode(params)
+        param = urllib.parse.urlencode(params)
         url = url.endswith('?') and (url + param)
         return url

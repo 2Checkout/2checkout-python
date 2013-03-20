@@ -1,5 +1,5 @@
 import hashlib
-from twocheckout import Twocheckout
+from .twocheckout import Twocheckout
 
 class Notification(Twocheckout):
     def __init__(self, dict_):
@@ -8,10 +8,10 @@ class Notification(Twocheckout):
     @classmethod
     def check_hash(cls, params=None):
         m = hashlib.md5()
-        m.update(params['sale_id'])
-        m.update(params['vendor_id'])
-        m.update(params['invoice_id'])
-        m.update(params['secret'])
+        m.update(params['sale_id'].encode('ascii'))
+        m.update(params['vendor_id'].encode('ascii'))
+        m.update(params['invoice_id'].encode('ascii'))
+        m.update(params['secret'].encode('ascii'))
         check_hash = m.hexdigest()
         check_hash = check_hash.upper()
         if check_hash == params['md5_hash']:

@@ -1,5 +1,5 @@
 import hashlib
-from twocheckout import Twocheckout
+from .twocheckout import Twocheckout
 
 class Passback(Twocheckout):
     def __init__(self, dict_):
@@ -8,10 +8,10 @@ class Passback(Twocheckout):
     @classmethod
     def check_hash(cls, params=None):
         m = hashlib.md5()
-        m.update(params['secret'])
-        m.update(params['sid'])
-        m.update(params['order_number'])
-        m.update(params['total'])
+        m.update(params['secret'].encode('ascii'))
+        m.update(params['sid'].encode('ascii'))
+        m.update(params['order_number'].encode('ascii'))
+        m.update(params['total'].encode('ascii'))
         check_hash = m.hexdigest()
         check_hash = check_hash.upper()
         if check_hash == params['key']:
