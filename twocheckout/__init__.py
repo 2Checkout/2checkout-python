@@ -9,4 +9,5 @@ from coupon import Coupon
 from contact import Contact
 from company import Company
 from charge import Charge
+from payment import Payment
 from error import TwocheckoutError

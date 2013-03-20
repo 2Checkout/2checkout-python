@@ -247,6 +247,18 @@ class ContactTest(TwocheckoutTestCase):
         contact = twocheckout.Contact.retrieve()
         self.assertEqual(contact.vendor_id, "1817037")
 
+class PaymentTest(TwocheckoutTestCase):
+    def setUp(self):
+        super(PaymentTest, self).setUp()
+
+    def test_1_pending(self):
+        payment = twocheckout.Payment.pending()
+        self.assertEqual(payment.release_level, "100")
+
+    def test_2_list(self):
+        payments = twocheckout.Payment.list()
+        self.assertEqual(len(payments), 0)
+
 class PassbackTest(TwocheckoutTestCase):
     def setUp(self):
         super(PassbackTest, self).setUp()

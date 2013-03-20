@@ -9,6 +9,12 @@ To use, download or clone the repository.
 git clone https://github.com/2checkout/2checkout-python.git
 ```
 
+If your using python version 3.0 or higher, checkout the 3.x branch.
+
+```shell
+git checkout 3.x
+```
+
 Install _(Or just import in your script.)_
 
 ```shell
