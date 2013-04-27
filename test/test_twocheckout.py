@@ -88,7 +88,7 @@ class SaleTest(TwocheckoutTestCase):
             result = sale.refund(EXAMPLE_REFUND)
             self.assertEqual(result.message, "refund added to invoice")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Invoice was already refunded.")
+            self.assertEqual(error.message, "Invoice too old to refund.")
 
     def test_4_refund_invoice(self):
         try:
@@ -97,7 +97,7 @@ class SaleTest(TwocheckoutTestCase):
             result = invoice.refund(EXAMPLE_REFUND)
             self.assertEqual(result.message, "refund added to invoice")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Invoice was already refunded.")
+            self.assertEqual(error.message, "Invoice too old to refund.")
 
     def test_5_refund_lineitem(self):
         try:
