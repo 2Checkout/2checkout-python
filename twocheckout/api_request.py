@@ -15,7 +15,7 @@ class Api(object):
         cls.password = credentials['password']
 
     @classmethod
-    def call(cls, method, params=None):
+    def call(cls, method, params={}):
         headers = {'Accept': 'application/json',
                    'User-Agent': '2Checkout Python/0.1.0/%s'
         }

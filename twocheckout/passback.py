@@ -6,7 +6,7 @@ class Passback(Twocheckout):
         super(self.__class__, self).__init__(dict_)
 
     @classmethod
-    def check_hash(cls, params=None):
+    def check_hash(cls, params={}):
         m = hashlib.md5()
         m.update(params['secret'])
         m.update(params['sid'])
@@ -20,9 +20,7 @@ class Passback(Twocheckout):
             return False
 
     @classmethod
-    def check(cls, params=None):
-        if params is None:
-            params = dict()
+    def check(cls, params={}):
         if 'order_number' in params and 'total' in params:
             check = Passback.check_hash(params)
             if check:

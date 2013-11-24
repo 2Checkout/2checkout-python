@@ -6,7 +6,7 @@ class Notification(Twocheckout):
         super(self.__class__, self).__init__(dict_)
 
     @classmethod
-    def check_hash(cls, params=None):
+    def check_hash(cls, params={}):
         m = hashlib.md5()
         m.update(params['sale_id'])
         m.update(params['vendor_id'])
@@ -20,9 +20,7 @@ class Notification(Twocheckout):
             return False
 
     @classmethod
-    def check(cls, params=None):
-        if params is None:
-            params = dict()
+    def check(cls, params={}):
         if 'sale_id' in params and 'invoice_id' in params:
             check = Notification.check_hash(params)
             if check:

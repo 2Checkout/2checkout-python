@@ -7,17 +7,13 @@ class Payment(Twocheckout):
         super(self.__class__, self).__init__(dict_)
 
     @classmethod
-    def pending(cls, params=None):
-        if params is None:
-            params = dict()
+    def pending(cls, params={}):
         url = 'acct/detail_pending_payment'
         response = cls(Api.call(url, params))
         return response.payment
 
     @classmethod
-    def list(cls, params=None):
-        if params is None:
-            params = dict()
+    def list(cls, params={}):
         url = 'acct/list_payments'
         response = cls(Api.call(url, params))
         return response.payments
