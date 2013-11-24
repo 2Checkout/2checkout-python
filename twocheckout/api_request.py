@@ -4,20 +4,18 @@ import json
 from error import TwocheckoutError
 
 
-class Api:
+class Api(object):
 
-    username = []
-    password = []
+    username = None
+    password = None
 
     @classmethod
     def credentials(cls, credentials):
-        Api.username = credentials['username']
-        Api.password = credentials['password']
+        cls.username = credentials['username']
+        cls.password = credentials['password']
 
     @classmethod
     def call(cls, method, params=None):
-        username = cls.username
-        password = cls.password
         headers = {'Accept': 'application/json',
                    'User-Agent': '2Checkout Python/0.1.0/%s'
         }
@@ -26,7 +24,7 @@ class Api:
         data = urllib.urlencode(params)
         password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
         password_manager.add_password(
-            None, 'https://www.2checkout.com', username, password
+            None, 'https://www.2checkout.com', cls.username, cls.password
         )
         auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
         opener = urllib2.build_opener(auth_handler)
