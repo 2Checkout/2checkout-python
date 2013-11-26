@@ -1,5 +1,5 @@
 import hashlib
-from twocheckout import Twocheckout
+from .twocheckout import Twocheckout
 
 class Passback(Twocheckout):
     def __init__(self, dict_):

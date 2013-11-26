@@ -1,6 +1,6 @@
-from api_request import Api
-from util import Util
-from twocheckout import Twocheckout
+from .api_request import Api
+from .util import Util
+from .twocheckout import Twocheckout
 
 
 class Sale(Twocheckout):

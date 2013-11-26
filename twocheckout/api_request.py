@@ -1,7 +1,7 @@
 import urllib
 import urllib2
 import json
-from error import TwocheckoutError
+from .error import TwocheckoutError
 
 
 class Api(object):

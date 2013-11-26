@@ -1,5 +1,5 @@
-from api_request import Api
-from twocheckout import Twocheckout
+from .api_request import Api
+from .twocheckout import Twocheckout
 
 
 class Coupon(Twocheckout):
