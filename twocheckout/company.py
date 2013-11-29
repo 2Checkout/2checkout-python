@@ -11,4 +11,3 @@ class Company(Twocheckout):
         url = 'acct/detail_company_info'
         response = cls(Api.call(url, params))
         return response.vendor_company_info
-

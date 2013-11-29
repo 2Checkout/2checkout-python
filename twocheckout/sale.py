@@ -43,8 +43,9 @@ class Sale(Twocheckout):
                     params = {'lineitem_id': lineitem_id}
                     result[i] = Api.call('sales/stop_lineitem_recurring', params)
                     i += 1
-                response = { "response_code": "OK",
-                             "response_message": str(len(result)) + " lineitems stopped successfully"
+                response = {
+                    "response_code": "OK",
+                    "response_message": str(len(result)) + " lineitems stopped successfully"
                 }
             else:
                 response = {
@@ -52,9 +53,11 @@ class Sale(Twocheckout):
                     "response_message": "No active recurring lineitems"
                 }
         else:
-            response = { "response_code": "NOTICE",
-                          "response_message": "This method can only be called on a sale or lineitem"
+            response = {
+                "response_code": "NOTICE",
+                "response_message": "This method can only be called on a sale or lineitem"
             }
+
         return Sale(response)
 
     def active(self):
@@ -66,14 +69,16 @@ class Sale(Twocheckout):
                 lineitem_id = v
                 result[i] = lineitem_id
                 i += 1
-            response = { "response_code": "ACTIVE",
-                         "response_message": str(len(result)) + " active recurring lineitems"
+            response = {
+                "response_code": "ACTIVE",
+                "response_message": str(len(result)) + " active recurring lineitems"
             }
         else:
             response = {
-                "response_code": "NOTICE","response_message":
-                "No active recurring lineitems"
+                "response_code": "NOTICE",
+                "response_message": "No active recurring lineitems"
             }
+
         return Sale(response)
 
     def comment(self, params={}):
