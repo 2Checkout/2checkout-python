@@ -1,5 +1,5 @@
-from api_request import Api
-from twocheckout import Twocheckout
+from .api_request import Api
+from .twocheckout import Twocheckout
 
 
 class Company(Twocheckout):
@@ -7,10 +7,7 @@ class Company(Twocheckout):
         super(self.__class__, self).__init__(dict_)
 
     @classmethod
-    def retrieve(cls, params=None):
-        if params is None:
-            params = dict()
+    def retrieve(cls, params={}):
         url = 'acct/detail_company_info'
         response = cls(Api.call(url, params))
         return response.vendor_company_info
-

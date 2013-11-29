@@ -1,6 +1,6 @@
-from api_request import Api
-from util import Util
-from twocheckout import Twocheckout
+from .api_request import Api
+from .util import Util
+from .twocheckout import Twocheckout
 
 
 class Sale(Twocheckout):
@@ -8,22 +8,16 @@ class Sale(Twocheckout):
         super(self.__class__, self).__init__(dict_)
 
     @classmethod
-    def find(cls, params=None):
-        if params is None:
-            params = dict()
+    def find(cls, params={}):
         response = cls(Api.call('sales/detail_sale', params))
         return response.sale
 
     @classmethod
-    def list(cls, params=None):
-        if params is None:
-            params = dict()
+    def list(cls, params={}):
         response = cls(Api.call('sales/list_sales', params))
         return response.sale_summary
 
-    def refund(self, params=None):
-        if params is None:
-            params = dict()
+    def refund(self, params={}):
         if hasattr(self, 'lineitem_id'):
             params['lineitem_id'] = self.lineitem_id
             url = 'sales/refund_lineitem'
@@ -35,9 +29,7 @@ class Sale(Twocheckout):
             url = 'sales/refund_invoice'
         return Sale(Api.call(url, params))
 
-    def stop(self, params=None):
-        if params is None:
-            params = dict()
+    def stop(self, params={}):
         if hasattr(self, 'lineitem_id'):
             params['lineitem_id'] = self.lineitem_id
             return Api.call('sales/stop_lineitem_recurring', params)
@@ -51,8 +43,9 @@ class Sale(Twocheckout):
                     params = {'lineitem_id': lineitem_id}
                     result[i] = Api.call('sales/stop_lineitem_recurring', params)
                     i += 1
-                response = { "response_code": "OK",
-                             "response_message": str(len(result)) + " lineitems stopped successfully"
+                response = {
+                    "response_code": "OK",
+                    "response_message": str(len(result)) + " lineitems stopped successfully"
                 }
             else:
                 response = {
@@ -60,9 +53,11 @@ class Sale(Twocheckout):
                     "response_message": "No active recurring lineitems"
                 }
         else:
-            response = { "response_code": "NOTICE",
-                          "response_message": "This method can only be called on a sale or lineitem"
+            response = {
+                "response_code": "NOTICE",
+                "response_message": "This method can only be called on a sale or lineitem"
             }
+
         return Sale(response)
 
     def active(self):
@@ -74,25 +69,23 @@ class Sale(Twocheckout):
                 lineitem_id = v
                 result[i] = lineitem_id
                 i += 1
-            response = { "response_code": "ACTIVE",
-                         "response_message": str(len(result)) + " active recurring lineitems"
+            response = {
+                "response_code": "ACTIVE",
+                "response_message": str(len(result)) + " active recurring lineitems"
             }
         else:
             response = {
-                "response_code": "NOTICE","response_message":
-                "No active recurring lineitems"
+                "response_code": "NOTICE",
+                "response_message": "No active recurring lineitems"
             }
+
         return Sale(response)
 
-    def comment(self, params=None):
-        if params is None:
-            params = dict()
+    def comment(self, params={}):
         params['sale_id'] = self.sale_id
         return Sale(Api.call('sales/create_comment', params))
 
-    def ship(self, params=None):
-        if params is None:
-            params = dict()
+    def ship(self, params={}):
         params['sale_id'] = self.sale_id
         return Sale(Api.call('sales/mark_shipped', params))
 

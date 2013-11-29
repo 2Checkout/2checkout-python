@@ -1,4 +1,4 @@
-class Util:
+class Util(object):
 
     @classmethod
     def active(cls, sale):

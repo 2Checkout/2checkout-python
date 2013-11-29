@@ -1,5 +1,6 @@
 class TwocheckoutError(Exception):
-    def __init__(self, code=None, msg=None, product_id=None, option_id=None, coupon_code=None):
+    def __init__(self, code=None, msg=None, product_id=None,
+                 option_id=None, coupon_code=None):
         super(TwocheckoutError, self).__init__(msg)
         self.code = code
         self.msg = msg
