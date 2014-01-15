@@ -13,7 +13,7 @@ NOW = datetime.datetime.now()
 
 EXAMPLE_PRODUCT = {
     'name': 'Example Product',
-    'price': 1.00,
+    'price': 1.00
 }
 
 EXAMPLE_OPTION = {
@@ -28,12 +28,12 @@ EXAMPLE_COUPON = {
 }
 
 EXAMPLE_SALE = {
-    'sale_id': 4774380224,
+    'sale_id': 4774380224
 }
 
 EXAMPLE_COMMENT = {
-    'sale_comment': "test",
-    }
+    'sale_comment': "test"
+}
 
 EXAMPLE_REFUND = {
     'comment': "test",
@@ -60,11 +60,37 @@ EXAMPLE_NOTIFICATION = {
     'secret': 'tango'
 }
 
+EXAMPLE_AUTH = {
+    'merchantOrderId': '123',
+    'token': 'ZDBiNGFkYzMtZGIzNi00MDMwLWIwMTctNTAzOGFhOTU1ODJm',
+    'currency': 'USD',
+    'total': '1.00',
+    'billingAddr': {
+        'name': 'Testing Tester',
+        'addrLine1': '123 Test St',
+        'city': 'Columbus',
+        'state': 'OH',
+        'zipCode': '43123',
+        'country': 'USA',
+        'email': 'cchristenson@2co.com',
+        'phoneNumber': '555-555-5555'
+    }
+}
+
 class TwocheckoutTestCase(unittest.TestCase):
     def setUp(self):
         super(TwocheckoutTestCase, self).setUp()
 
-        twocheckout.Api.credentials({'username':'APIuser1817037', 'password':'APIpass1817037'})
+        twocheckout.Api.credentials({
+            'username': 'APIuser1817037',
+            'password': 'APIpass1817037'
+        })
+
+        twocheckout.Api.auth_credentials({
+            'private_key': '9999999',
+            'seller_id': '532001',
+            'mode': 'production'
+        })
 
 class SaleTest(TwocheckoutTestCase):
     def setUp(self):
@@ -276,6 +302,18 @@ class NotificationTest(TwocheckoutTestCase):
         params = EXAMPLE_NOTIFICATION
         result = twocheckout.Notification.check(params)
         self.assertEqual(result.response_code, "SUCCESS")
+
+class AuthorizationTest(TwocheckoutTestCase):
+    def setUp(self):
+        super(AuthorizationTest, self).setUp()
+
+    def test_1_auth(self):
+        params = EXAMPLE_AUTH
+        try:
+            result = twocheckout.Charge.authorize(params)
+            self.assertEqual(result.responseCode, "APPROVED")
+        except TwocheckoutError as error:
+            self.assertEqual(error.msg, "Unauthorized")
 
 if __name__ == '__main__':
     unittest.main()
