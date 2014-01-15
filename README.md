@@ -25,7 +25,106 @@ import twocheckout
 Full documentation for each binding will be provided in the [Wiki](https://github.com/2checkout/2checkout-python/wiki).
 
 
-Example API Usage
+Example Purchase API Usage
+-----------------
+
+*Example Usage:*
+
+```python
+import twocheckout
+
+
+twocheckout.Api.auth_credentials({
+    'private_key': '9999999',
+    'seller_id': '1817037',
+    'mode': 'production'
+})
+
+params = {
+    'merchantOrderId': '123',
+    'token': 'ODAxZjUzMDEtOWU0MC00NzA3LWFmMDctYmY1NTQ3MDhmZDFh',
+    'currency': 'USD',
+    'total': '1.00',
+    'billingAddr': {
+        'name': 'Testing Tester',
+        'addrLine1': '123 Test St',
+        'city': 'Columbus',
+        'state': 'OH',
+        'zipCode': '43123',
+        'country': 'USA',
+        'email': 'cchristenson@2co.com',
+        'phoneNumber': '555-555-5555'
+    }
+}
+
+try:
+    result = twocheckout.Charge.authorize(params)
+    print result.responseCode
+except TwocheckoutError as error:
+    print error.msg
+
+```
+
+*Example Response:*
+
+```python
+{
+    'lineItems': [
+        {
+            'tangible': 'N',
+            'name': '123',
+            'price': '1.00',
+            'description': '',
+            'recurrence': None,
+            'duration': None,
+            'startupFee': None,
+            'productId': '',
+            'type': 'product',
+            'options': [
+                
+            ],
+            'quantity': '1'
+        }
+    ],
+    'responseMsg': 'Successfully authorized the provided creditcard',
+    'recurrentInstallmentId': None,
+    'shippingAddr': {
+        'city': None,
+        'phoneExtension': None,
+        'country': None,
+        'addrLine2': None,
+        'zipCode': None,
+        'addrLine1': None,
+        'state': None,
+        'phoneNumber': None,
+        'email': None,
+        'name': None
+    },
+    'orderNumber': '205180784763',
+    'currencyCode': 'USD',
+    'merchantOrderId': '123',
+    'errors': None,
+    'responseCode': 'APPROVED',
+    'transactionId': '205180784772',
+    'total': '1.00',
+    'type': 'AuthResponse',
+    'billingAddr': {
+        'city': 'Columbus',
+        'phoneExtension': None,
+        'country': 'USA',
+        'addrLine2': None,
+        'zipCode': '43123',
+        'addrLine1': '123 Test St',
+        'state': 'OH',
+        'phoneNumber': '555-555-5555',
+        'email': 'cchristenson@2co.com',
+        'name': 'Testing Tester'
+    }
+}
+```
+
+
+Example Admin API Usage
 -----------------
 
 *Example Usage:*

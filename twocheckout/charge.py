@@ -1,7 +1,11 @@
 import urllib.request, urllib.parse, urllib.error
+from .api_request import Api
+from .twocheckout import Twocheckout
 
 
-class Charge:
+class Charge(Twocheckout):
+    def __init__(self, dict_):
+        super(self.__class__, self).__init__(dict_)
 
     @classmethod
     def form(cls, params=None):
@@ -39,3 +43,8 @@ class Charge:
         param = urllib.parse.urlencode(params)
         url = url.endswith('?') and (url + param)
         return url
+
+    @classmethod
+    def authorize(cls, params=None):
+        response = Charge(Api.call('authService', params))
+        return response.response
