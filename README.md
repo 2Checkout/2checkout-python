@@ -35,7 +35,7 @@ import twocheckout
 
 
 twocheckout.Api.auth_credentials({
-    'private_key': '9999999',
+    'private_key': '3508079E-5383-44D4-BF69-DC619C0D9811',
     'seller_id': '1817037',
     'mode': 'production'
 })
