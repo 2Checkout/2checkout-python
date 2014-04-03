@@ -39,13 +39,16 @@ class Api:
             result = raw_data.decode('utf-8')
             return json.loads(result)
         except urllib.error.HTTPError as e:
-            raw_data = e.read()
-            result = raw_data.decode('utf-8')
-            exception = json.loads(result)
-            if method == 'authService':
-                raise TwocheckoutError(exception['exception']['errorCode'], exception['exception']['errorMsg'])
+            if not hasattr(e, 'read'):
+                raise TwocheckoutError(e.code, e.msg)
             else:
-                raise TwocheckoutError(exception['errors'][0]['code'], exception['errors'][0]['message'])
+                raw_data = e.read()
+                result = raw_data.decode('utf-8')
+                exception = json.loads(result)
+                if method == 'authService':
+                    raise TwocheckoutError(exception['exception']['errorCode'], exception['exception']['errorMsg'])
+                else:
+                    raise TwocheckoutError(exception['errors'][0]['code'], exception['errors'][0]['message'])
 
     @classmethod
     def set_opts(cls, method, params=None):
