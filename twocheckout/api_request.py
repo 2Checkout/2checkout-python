@@ -17,12 +17,15 @@ class Api:
     def credentials(cls, credentials):
         Api.username = credentials['username']
         Api.password = credentials['password']
+        if 'mode' in credentials:
+            Api.mode = credentials['mode']
 
     @classmethod
     def auth_credentials(cls, credentials):
         Api.private_key = credentials['private_key']
         Api.seller_id = credentials['seller_id']
-        Api.mode = credentials['mode']
+        if 'mode' in credentials:
+            Api.mode = credentials['mode']
 
     @classmethod
     def call(cls, method, params=None):
@@ -34,11 +37,14 @@ class Api:
             result = urllib2.urlopen(req).read()
             return json.loads(result)
         except urllib2.HTTPError, e:
-            exception = json.loads(e.read())
-            if method == 'authService':
-                raise TwocheckoutError(exception['exception']['errorCode'], exception['exception']['errorMsg'])
+            if not hasattr(e, 'read'):
+                raise TwocheckoutError(e.code, e.msg)
             else:
-                raise TwocheckoutError(exception['errors'][0]['code'], exception['errors'][0]['message'])
+                exception = json.loads(e.read())
+                if method == 'authService':
+                    raise TwocheckoutError(exception['exception']['errorCode'], exception['exception']['errorMsg'])
+                else:
+                    raise TwocheckoutError(exception['errors'][0]['code'], exception['errors'][0]['message'])
 
     @classmethod
     def set_opts(cls, method, params=None):
