@@ -49,10 +49,14 @@ class Api:
         else:
             username = cls.username
             password = cls.password
+            if cls.mode == 'sandbox':
+                passwd_url = 'https://sandbox.2checkout.com'
+            else:
+                passwd_url = 'https://www.2checkout.com'
             data = urllib.urlencode(params)
             password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
             password_manager.add_password(
-                None, 'https://www.2checkout.com', username, password
+                None, passwd_url, username, password
             )
             auth_handler = urllib2.HTTPBasicAuthHandler(password_manager)
             opener = urllib2.build_opener(auth_handler)
@@ -76,12 +80,12 @@ class Api:
 
     @classmethod
     def build_url(cls, method):
-        if method == 'authService':
-            if cls.mode == 'sandbox':
-                url = 'https://sandbox.2checkout.com/checkout/api/'
-            else:
-                url = 'https://www.2checkout.com/checkout/api/'
-            url += cls.version + '/' + cls.seller_id + '/rs/' + method
+        if cls.mode == 'sandbox':
+            url = 'https://sandbox.2checkout.com'
         else:
-            url = 'https://www.2checkout.com/api/' + method
+            url = 'https://www.2checkout.com'
+        if method == 'authService':
+            url += '/checkout/api/' + cls.version + '/' + cls.seller_id + '/rs/' + method
+        else:
+            url += '/api/' + method
         return url

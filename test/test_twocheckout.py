@@ -28,7 +28,7 @@ EXAMPLE_COUPON = {
 }
 
 EXAMPLE_SALE = {
-    'sale_id': 4774380224
+    'sale_id': 9093717691800
 }
 
 EXAMPLE_COMMENT = {
@@ -62,7 +62,7 @@ EXAMPLE_NOTIFICATION = {
 
 EXAMPLE_AUTH = {
     'merchantOrderId': '123',
-    'token': 'ZDBiNGFkYzMtZGIzNi00MDMwLWIwMTctNTAzOGFhOTU1ODJm',
+    'token': 'NTQyZTQyOTMtNjA0Ni00NzM4LTkyNDItNjVlMmUzZTU2NTNj',
     'currency': 'USD',
     'total': '1.00',
     'billingAddr': {
@@ -82,14 +82,15 @@ class TwocheckoutTestCase(unittest.TestCase):
         super(TwocheckoutTestCase, self).setUp()
 
         twocheckout.Api.credentials({
-            'username': 'APIuser1817037',
-            'password': 'APIpass1817037'
+            'username': 'testlibraryapi901248204',
+            'password': 'testlibraryapi901248204PASS',
+            'mode': 'sandbox'
         })
 
         twocheckout.Api.auth_credentials({
-            'private_key': '9999999',
-            'seller_id': '532001',
-            'mode': 'production'
+            'private_key': 'BE632CB0-BB29-11E3-AFB6-D99C28100996',
+            'seller_id': '901248204',
+            'mode': 'sandbox'
         })
 
 class SaleTest(TwocheckoutTestCase):
@@ -99,14 +100,14 @@ class SaleTest(TwocheckoutTestCase):
     def test_1_find_sale(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
-            self.assertEqual(int(sale.sale_id), 4774380224)
+            self.assertEqual(int(sale.sale_id), 9093717691800)
         except TwocheckoutError as error:
             self.assertEqual(error.message, "Unable to find record.")
 
     def test_2_list_sale(self):
-        params = {'pagesize': 3}
+        params = {'pagesize': 2}
         list = twocheckout.Sale.list(params)
-        self.assertEqual(len(list), 3)
+        self.assertEqual(len(list), 2)
 
     def test_3_refund_sale(self):
         try:
@@ -114,7 +115,7 @@ class SaleTest(TwocheckoutTestCase):
             result = sale.refund(EXAMPLE_REFUND)
             self.assertEqual(result.message, "refund added to invoice")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Invoice too old to refund.")
+            self.assertEqual(error.message, "Invoice was already refunded.")
 
     def test_4_refund_invoice(self):
         try:
@@ -123,7 +124,7 @@ class SaleTest(TwocheckoutTestCase):
             result = invoice.refund(EXAMPLE_REFUND)
             self.assertEqual(result.message, "refund added to invoice")
         except TwocheckoutError as error:
-            self.assertEqual(error.message, "Invoice too old to refund.")
+            self.assertEqual(error.message, "Invoice was already refunded.")
 
     def test_5_refund_lineitem(self):
         try:
@@ -199,9 +200,9 @@ class ProductTest(TwocheckoutTestCase):
         self.assertEqual(result.response_message, "Product successfully deleted.")
 
     def test_5_list(self):
-        params = {'pagesize': 3}
+        params = {'pagesize': 2}
         list = twocheckout.Product.list(params)
-        self.assertEqual(len(list), 3)
+        self.assertEqual(len(list), 2)
 
 class OptionTest(TwocheckoutTestCase):
     def setUp(self):
@@ -263,7 +264,7 @@ class CompanyTest(TwocheckoutTestCase):
 
     def test_1_retrieve(self):
         company = twocheckout.Company.retrieve()
-        self.assertEqual(company.vendor_id, "1817037")
+        self.assertEqual(company.vendor_id, "901248204")
 
 class ContactTest(TwocheckoutTestCase):
     def setUp(self):
@@ -271,7 +272,7 @@ class ContactTest(TwocheckoutTestCase):
 
     def test_1_create(self):
         contact = twocheckout.Contact.retrieve()
-        self.assertEqual(contact.vendor_id, "1817037")
+        self.assertEqual(contact.vendor_id, "901248204")
 
 class PaymentTest(TwocheckoutTestCase):
     def setUp(self):
@@ -279,7 +280,7 @@ class PaymentTest(TwocheckoutTestCase):
 
     def test_1_pending(self):
         payment = twocheckout.Payment.pending()
-        self.assertEqual(payment.release_level, "100")
+        self.assertEqual(payment.release_level, "300")
 
     def test_2_list(self):
         payments = twocheckout.Payment.list()
