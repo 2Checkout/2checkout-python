@@ -3,7 +3,7 @@ class Util:
     @classmethod
     def active(cls, sale):
         i = 0
-        if hasattr(sale, 'recurring'):
+        if 'recurring' in sale:
             invoice = sale
         else:
             invoices = dict()
