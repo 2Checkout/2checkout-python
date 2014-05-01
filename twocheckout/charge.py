@@ -4,40 +4,51 @@ from twocheckout import Twocheckout
 
 
 class Charge(Twocheckout):
+
+    checkout_url = "https://www.2checkout.com/checkout/purchase"
+
     def __init__(self, dict_):
         super(self.__class__, self).__init__(dict_)
 
     @classmethod
-    def form(cls, params=None):
-        if params is None:
-            params = dict()
-        form = "<form id=\"2checkout\" action=\"https://www.2checkout.com/checkout/purchase\" method=\"post\">\n"
-        for param in params:
-            form = form + "<input type=\"hidden\" name=\"" + param + "\" value=\"" + str(params[param]) + "\" />\n"
-        return form + "<input type=\"submit\" value=\"Proceed to Checkout\" />\n</form>\n"
+    def mode(cls, mode):
+        if mode == 'sandbox':
+            Charge.checkout_url = 'https://sandbox.2checkout.com/checkout/purchase'
+        else:
+            Charge.checkout_url = 'https://www.2checkout.com/checkout/purchase'
 
     @classmethod
-    def submit(cls, params=None):
+    def form(cls, params=None, text='Proceed to Checkout'):
         if params is None:
             params = dict()
-        form = "<form id=\"2checkout\" action=\"https://www.2checkout.com/checkout/purchase\" method=\"post\">\n"
+        form = "<form id=\"2checkout\" action=\"" + Charge.checkout_url + "\" method=\"post\">"
         for param in params:
-            form = form + "<input type=\"hidden\" name=\"" + param + "\" value=\"" + str(params[param]) + "\" />\n"
-        return form + "<input type=\"submit\" value=\"Proceed to Checkout\" />\n</form>\n" + \
-               "<script type=\"text/javascript\">document.getElementById('2checkout').submit();</script>"
+            form = form + "<input type=\"hidden\" name=\"" + param + "\" value=\"" + str(params[param]) + "\" />"
+        return form + "<input type=\"submit\" value=\"" + text + "\" /></form>"
 
     @classmethod
-    def direct(cls, params=None):
+    def submit(cls, params=None, text='Proceed to Checkout'):
         if params is None:
             params = dict()
-        form = "<form id=\"2checkout\" action=\"https://www.2checkout.com/checkout/purchase\" method=\"post\">\n"
+        form = "<form id=\"2checkout\" action=\"" + Charge.checkout_url + "\" method=\"post\">"
         for param in params:
-            form = form + "<input type=\"hidden\" name=\"" + param + "\" value=\"" + str(params[param]) + "\" />\n"
-        return form + "<input type=\"submit\" value=\"Proceed to Checkout\" />\n</form>\n" + \
-               "<script src=\"https://www.2checkout.com/static/checkout/javascript/direct.min.js\"></script>"
+            form = form + "<input type=\"hidden\" name=\"" + param + "\" value=\"" + str(params[param]) + "\" />"
+        return form + "<input type=\"submit\" value=\"" + text + "\" /></form>" + \
+            "<script type=\"text/javascript\">document.getElementById(\"2checkout\").submit();</script>"
 
     @classmethod
-    def link(cls, params=None, url="https://www.2checkout.com/checkout/purchase?"):
+    def direct(cls, params=None, text='Proceed to Checkout'):
+        if params is None:
+            params = dict()
+        form = "<form id=\"2checkout\" action=\"" + Charge.checkout_url + "\" method=\"post\">"
+        for param in params:
+            form = form + "<input type=\"hidden\" name=\"" + param + "\" value=\"" + str(params[param]) + "\" />"
+        return form + "<input type=\"submit\" value=\"" + text + "\" /></form>" + \
+            "<script src=\"https://www.2checkout.com/static/checkout/javascript/direct.min.js\"></script>"
+
+    @classmethod
+    def link(cls, params=None):
+        url = Charge.checkout_url + '?'
         if params is None:
             params = dict()
         param = urllib.urlencode(params)
