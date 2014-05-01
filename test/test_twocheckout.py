@@ -62,7 +62,7 @@ EXAMPLE_NOTIFICATION = {
 
 EXAMPLE_AUTH = {
     'merchantOrderId': '123',
-    'token': 'OTQzZGQ3MGUtMzUzMS00OTJhLWI2NmMtNmQ4OTAyMTE0ZWY3',
+    'token': 'YjY0YWMwMGQtYzhjMS00MzRmLWEzMDYtZjU3YzdmZmZiMTdj',
     'currency': 'USD',
     'total': '1.00',
     'billingAddr': {
@@ -148,7 +148,7 @@ class SaleTest(TwocheckoutTestCase):
         result = invoice.stop()
         self.assertEqual(result.response_message, "No active recurring lineitems")
 
-    def test_6_stop_sale(self):
+    def test_7_stop_sale(self):
         sale = twocheckout.Sale.find(EXAMPLE_SALE)
         invoice = sale.invoices[0]
         try:
@@ -157,19 +157,19 @@ class SaleTest(TwocheckoutTestCase):
         except TwocheckoutError as error:
             self.assertEqual(error.msg, "Lineitem is not scheduled to recur.")
 
-    def test_7_comment(self):
+    def test_8_comment(self):
         sale = twocheckout.Sale.find(EXAMPLE_SALE)
         result = sale.comment(EXAMPLE_COMMENT)
         self.assertEqual(result.response_message, "Created comment successfully.")
 
-    def test_8_ship(self):
+    def test_9_ship(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             result = sale.ship(EXAMPLE_SHIP)
         except TwocheckoutError as error:
             self.assertEqual(error.msg, "Sale already marked shipped.")
 
-    def test_9_reauth(self):
+    def test_10_reauth(self):
         try:
             sale = twocheckout.Sale.find(EXAMPLE_SALE)
             sale.reauth()
