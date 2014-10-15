@@ -35,7 +35,12 @@ class Api:
         try:
             req = urllib2.Request(url, data, headers)
             result = urllib2.urlopen(req).read()
-            return json.loads(result)
+            result_safe=None
+            try:
+                result_safe = unicode(result)
+            except UnicodeDecodeError:
+                result_safe = unicode( str(result).decode('utf-8', 'ignore') )
+            return json.loads(result_safe)
         except urllib2.HTTPError, e:
             if not hasattr(e, 'read'):
                 raise TwocheckoutError(e.code, e.msg)
