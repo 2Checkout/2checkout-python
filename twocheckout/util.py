@@ -1,5 +1,4 @@
 class Util:
-
     @classmethod
     def active(cls, sale):
         i = 0

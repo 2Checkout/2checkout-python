@@ -1,45 +1,44 @@
 import urllib
 import urllib2
 import json
+
 from error import TwocheckoutError
 
 
-class Api:
-
-    username = None
-    password = None
-    private_key = None
-    seller_id = None
-    mode = None
+class Api(object):
     version = '1'
 
-    @classmethod
-    def credentials(cls, credentials):
-        Api.username = credentials['username']
-        Api.password = credentials['password']
-        if 'mode' in credentials:
-            Api.mode = credentials['mode']
+    def __init__(self, seller_id=None, private_key=None, username=None, password=None, mode=None):
+        self.seller_id = seller_id
+        self.private_key = private_key
+        self.username = username
+        self.password = password
+        self.mode = mode
 
-    @classmethod
-    def auth_credentials(cls, credentials):
-        Api.private_key = credentials['private_key']
-        Api.seller_id = credentials['seller_id']
+    def credentials(self, credentials):
+        self.username = credentials['username']
+        self.password = credentials['password']
         if 'mode' in credentials:
-            Api.mode = credentials['mode']
+            self.mode = credentials['mode']
 
-    @classmethod
-    def call(cls, method, params=None):
-        data = cls.set_opts(method, params)
-        url = cls.build_url(method)
-        headers = cls.build_headers(method)
+    def auth_credentials(self, credentials):
+        self.private_key = credentials['private_key']
+        self.seller_id = credentials['seller_id']
+        if 'mode' in credentials:
+            self.mode = credentials['mode']
+
+    def call(self, method, params=None):
+        data = self.set_opts(method, params)
+        url = self.build_url(method)
+        headers = self.build_headers(method)
         try:
             req = urllib2.Request(url, data, headers)
             result = urllib2.urlopen(req).read()
-            result_safe=None
+            result_safe = None
             try:
                 result_safe = unicode(result)
             except UnicodeDecodeError:
-                result_safe = unicode( str(result).decode('utf-8', 'ignore') )
+                result_safe = unicode(str(result).decode('utf-8', 'ignore'))
             return json.loads(result_safe)
         except urllib2.HTTPError, e:
             if not hasattr(e, 'read'):
@@ -51,16 +50,15 @@ class Api:
                 else:
                     raise TwocheckoutError(exception['errors'][0]['code'], exception['errors'][0]['message'])
 
-    @classmethod
-    def set_opts(cls, method, params=None):
+    def set_opts(self, method, params=None):
         if method == 'authService':
-            params['sellerId'] = cls.seller_id
-            params['privateKey'] = cls.private_key
+            params['sellerId'] = self.seller_id
+            params['privateKey'] = self.private_key
             data = json.dumps(params)
         else:
-            username = cls.username
-            password = cls.password
-            if cls.mode == 'sandbox':
+            username = self.username
+            password = self.password
+            if self.mode == 'sandbox':
                 passwd_url = 'https://sandbox.2checkout.com'
             else:
                 passwd_url = 'https://www.2checkout.com'
@@ -74,8 +72,7 @@ class Api:
             urllib2.install_opener(opener)
         return data
 
-    @classmethod
-    def build_headers(cls, method):
+    def build_headers(self, method):
         if method == 'authService':
             headers = {
                 'Accept': 'application/json',
@@ -89,14 +86,13 @@ class Api:
             }
         return headers
 
-    @classmethod
-    def build_url(cls, method):
-        if cls.mode == 'sandbox':
+    def build_url(self, method):
+        if self.mode == 'sandbox':
             url = 'https://sandbox.2checkout.com'
         else:
             url = 'https://www.2checkout.com'
         if method == 'authService':
-            url += '/checkout/api/' + cls.version + '/' + cls.seller_id + '/rs/' + method
+            url += '/checkout/api/' + self.version + '/' + self.seller_id + '/rs/' + method
         else:
             url += '/api/' + method
         return url
