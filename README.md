@@ -65,7 +65,7 @@ params = {
 try:
     result = twocheckout.Charge.authorize(params)
     print result.responseCode
-except TwocheckoutError as error:
+except twocheckout.TwocheckoutError as error:
     print error.msg
 
 ```
