@@ -39,7 +39,9 @@ Example Purchase API Usage
 import twocheckout
 
 
-twocheckout.Api.auth_credentials({
+api = twocheckout.Api()
+
+api.auth_credentials({
     'private_key': '3508079E-5383-44D4-BF69-DC619C0D9811',
     'seller_id': '1817037',
     'mode': 'production'
@@ -63,7 +65,7 @@ params = {
 }
 
 try:
-    result = twocheckout.Charge.authorize(params)
+    result = twocheckout.Charge.authorize(api, params)
     print result.responseCode
 except twocheckout.TwocheckoutError as error:
     print error.msg
@@ -136,8 +138,9 @@ Example Admin API Usage
 ```python
 import twocheckout
 
+api = twocheckout.Api()
 
-twocheckout.Api.credentials({'username':'APIuser1817037', 'password':'APIpass1817037'})
+api.credentials({'username':'APIuser1817037', 'password':'APIpass1817037'})
 
 params = {
     'sale_id': 4774467596,
@@ -145,7 +148,7 @@ params = {
     'comment': "Refunding Sale"
     }
 
-sale = twocheckout.Sale.find(params)
+sale = twocheckout.Sale.find(api, params)
 sale.refund(params);
 ```
 
@@ -170,7 +173,7 @@ params = {
     'total': 1.00
 }
 
-form = twocheckout.Charge.submit(params)
+form = twocheckout.Charge.submit(api, params)
 ```
 *Example Response:*
 
@@ -193,7 +196,7 @@ Example Return Usage:
 ```python
 params = web.input() # using web.py
 params['secret'] = 'tango'
-result = twocheckout.Passback.check(params)
+result = twocheckout.Passback.check(api, params)
 ```
 
 *Example Response:*
@@ -213,7 +216,7 @@ Example INS Usage:
 ```python
 params = web.input() # using web.py
 params['secret'] = 'tango'
-result = twocheckout.Notification.check(params)
+result = twocheckout.Notification.check(api, params)
 ```
 
 *Example Response:*
@@ -235,7 +238,7 @@ TwocheckoutError exceptions are thrown by if an error has returned. It is best t
 
 ```python
 try:
-    sale = twocheckout.Sale.find(EXAMPLE_SALE)
+    sale = twocheckout.Sale.find(api, EXAMPLE_SALE)
     invoice = sale.invoices[0]
     lineitem = invoice.lineitems[0]
     result = lineitem.refund(EXAMPLE_REFUND)

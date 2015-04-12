@@ -1,41 +1,39 @@
-from api_request import Api
 from twocheckout import Twocheckout
 
 
 class Product(Twocheckout):
-    def __init__(self, dict_):
-        super(self.__class__, self).__init__(dict_)
-
     @classmethod
-    def create(cls, params=None):
+    def create(cls, api, params=None):
         if params is None:
             params = dict()
-        return cls(Api.call('products/create_product', params))
+        return cls(api.call('products/create_product', params), api=api)
 
     @classmethod
-    def find(cls, params=None):
+    def find(cls, api, params=None):
         if params is None:
             params = dict()
-        result = cls(Api.call('products/detail_product', params))
+        result = cls(api.call('products/detail_product', params), api=api)
         return result.product
 
     @classmethod
-    def list(cls, params=None):
+    def list(cls, api, params=None):
         if params is None:
             params = dict()
-        result = cls(Api.call('products/list_products', params))
+        result = cls(api.call('products/list_products', params), api=api)
         return result.products
 
     def update(self, params=None):
+        api = self.api
         if params is None:
             params = dict()
         params['product_id'] = self.product_id
-        Api.call('products/update_product', params)
-        product = Product(Api.call('products/detail_product', params))
+        api.call('products/update_product', params)
+        product = Product(api.call('products/detail_product', params), api=api)
         return product.product
 
     def delete(self, params=None):
+        api = self.api
         if params is None:
             params = dict()
         params['product_id'] = self.product_id
-        return Product(Api.call('products/delete_product', params))
+        return Product(api.call('products/delete_product', params), api=api)
