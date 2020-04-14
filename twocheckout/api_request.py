@@ -37,7 +37,10 @@ class Api:
             binary_data = data.encode('ascii')
             req = urllib.request.Request(url, binary_data, headers)
             raw_data = urllib.request.urlopen(req).read()
-            result = raw_data.decode('utf-8')
+            try:
+                result = raw_data.decode('utf-8')
+            except UnicodeDecodeError:
+                result = raw_data.decode('utf-8', 'ignore')
             return json.loads(result)
         except urllib.error.HTTPError as e:
             if not hasattr(e, 'read'):
