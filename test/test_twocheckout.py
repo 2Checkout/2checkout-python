@@ -21,7 +21,7 @@ EXAMPLE_SALE = {
 }
 
 EXAMPLE_COMMENT = {
-    'sale_comment': "python2 test"
+    'sale_comment': "python3 test"
 }
 
 EXAMPLE_REFUND = {
