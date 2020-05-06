@@ -17,7 +17,7 @@ EXAMPLE_PRODUCT = {
 }
 
 EXAMPLE_SALE = {
-    'sale_id': 250353684562
+    'sale_id': 250353589267
 }
 
 EXAMPLE_COMMENT = {
@@ -50,12 +50,12 @@ EXAMPLE_NOTIFICATION = {
 }
 
 EXAMPLE_AUTH = {
-    "sellerId": "250111206876",
-    "privateKey": "F4DD0173-E741-413D-B050-67B8FF3E3705",
+    "sellerId": "CREDENTIALS_HERE",
+    "privateKey": "CREDENTIALS_HERE",
     "merchantOrderId": "123",
-    'token': 'ZjA5MDM1MTgtZDA0Zi00OTE3LTk4YWQtMWJjOWRhZDI1ZjRk',
-    'currency': 'USD',
-    'total': '2.00',
+    "token": "CUSTOMER-CLIENT-SIDE-TOKEN",
+    "currency": "USD",
+    "total": "2.00",
     "demo": True,
      "billingAddr": {
         "name": "John Doe",
@@ -74,13 +74,13 @@ class TwocheckoutTestCase(unittest.TestCase):
         super(TwocheckoutTestCase, self).setUp()
 
         twocheckout.Api.credentials({
-            'username': 'test_api_250111206876',
-            'password': 'CGH2Mqe5Zw2zwu4F'
+            'username': 'CREDENTIALS_HERE',
+            'password': 'CREDENTIALS_HERE'
         })
 
         twocheckout.Api.auth_credentials({
-            'private_key': 'F4DD0173-E741-413D-B050-67B8FF3E3705',
-            'seller_id': '250111206876'
+            'private_key': 'CREDENTIALS_HERE',
+            'seller_id': 'CREDENTIALS_HERE'
         })
 
 
