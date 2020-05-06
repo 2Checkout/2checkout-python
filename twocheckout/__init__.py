@@ -4,8 +4,6 @@ from .util import Util
 from .passback import Passback
 from .ins import Notification
 from .product import Product
-from .option import Option
-from .coupon import Coupon
 from .contact import Contact
 from .company import Company
 from .charge import Charge
