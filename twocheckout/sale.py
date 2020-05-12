@@ -95,8 +95,3 @@ class Sale(Twocheckout):
             params = dict()
         params['sale_id'] = self.sale_id
         return Sale(Api.call('sales/mark_shipped', params))
-
-    def reauth(self):
-        params = dict()
-        params['sale_id'] = self.sale_id
-        return Sale(Api.call('sales/reauth', params))

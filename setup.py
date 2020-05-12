@@ -3,7 +3,7 @@
 from distutils.core import setup
 setup(
     name="twocheckout",
-    version='0.3.0',
+    version='0.4.0',
     description="2Checkout Python Library",
     author="Craig Christenson",
     author_email="christensoncraig@gmail.com",
