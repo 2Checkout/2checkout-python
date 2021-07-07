@@ -3,254 +3,422 @@ import os
 import sys
 import datetime
 import unittest
-from twocheckout import TwocheckoutError
+import twocheckout
+from test import config
+import hmac
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-import twocheckout
-
 
 NOW = datetime.datetime.now()
 
-EXAMPLE_PRODUCT = {
-    'name': 'Python Example Product',
-    'price': 2.00
+auth_params = {
+    'merchant_code': config.TWOCHECKOUT_TEST_MERCHANT_ID,
+    'secret_key': config.TWOCHECKOUT_TEST_MERCHANT_SECRET_KEY,
 }
-
-EXAMPLE_SALE = {
-    'sale_id': 250353589267
-}
-
-EXAMPLE_COMMENT = {
-    'sale_comment': "python2 test"
-}
-
-EXAMPLE_REFUND = {
-    'comment': "Python Refund Sale",
-    'category': 1
-}
-
-EXAMPLE_SHIP = {
-    'tracking_number': "test"
-}
-
-EXAMPLE_PASSBACK = {
-    'sid': '1817037',
-    'key': '7AB926D469648F3305AE361D5BD2C3CB',
-    'total': '0.01',
-    'order_number': '4774380224',
-    'secret': 'tango'
-}
-
-EXAMPLE_NOTIFICATION = {
-    'vendor_id': '1817037',
-    'sale_id': '4774380224',
-    'invoice_id': '4774380233',
-    'md5_hash': '566C45D68B75357AD43F9010CFFE8CF5',
-    'secret': 'tango'
-}
-
-EXAMPLE_AUTH = {
-    "sellerId": "CREDENTIALS_HERE",
-    "privateKey": "CREDENTIALS_HERE",
-    "merchantOrderId": "123",
-    "token": "CUSTOMER-CLIENT-SIDE-TOKEN",
-    "currency": "USD",
-    "total": "2.00",
-    "demo": True,
-     "billingAddr": {
-        "name": "John Doe",
-        "addrLine1": "123 Test St",
-        "city": "Columbus",
-        "state": "Ohio",
-        "zipCode": "43123",
-        "country": "USA",
-        "email": "example@2co.com",
-        "phoneNumber": "5555555555"
+order_transaction_id = '147288494'
+order_get_test = {"meta": {"status": "success", "message": "ok"},
+                  "body": {'RefNo': '147288494', 'OrderNo': 0, 'ExternalReference': 'REST_API_AVANGTE',
+                           'ShopperRefNo': None,
+                           'Status': 'PENDING', 'ApproveStatus': 'WAITING', 'VendorApproveStatus': 'OK',
+                           'MerchantCode': config.TWOCHECKOUT_TEST_MERCHANT_ID, 'Language': 'en',
+                           'OrderDate': '2021-03-19 11:49:50',
+                           'FinishDate': None,
+                           'Source': 'testAPI.com',
+                           'Affiliate': {'AffiliateCode': None, 'AffiliateSource': None, 'AffiliateName': None,
+                                         'AffiliateUrl': None},
+                           'HasShipping': False,
+                           'BillingDetails': {'FiscalCode': None, 'TaxOffice': None, 'Phone': None,
+                                              'FirstName': 'Customer',
+                                              'LastName': '2Checkout', 'Company': None,
+                                              'Email': 'testcustomer@2Checkout.com',
+                                              'Address1': 'Test Address', 'Address2': None, 'City': 'LA',
+                                              'Zip': '12345',
+                                              'CountryCode': 'us', 'State': 'California'},
+                           'DeliveryDetails': {'Phone': None, 'FirstName': 'Customer', 'LastName': '2Checkout',
+                                               'Company': None,
+                                               'Email': 'testcustomer@2Checkout.com', 'Address1': 'Test Address',
+                                               'Address2': None,
+                                               'City': 'LA', 'Zip': '12345', 'CountryCode': 'us',
+                                               'State': 'California'},
+                           'PaymentDetails': {'Type': 'CC', 'Currency': 'usd',
+                                              'PaymentMethod': {'Authorize3DS': None, 'Vendor3DSReturnURL': None,
+                                                                'Vendor3DSCancelURL': None, 'FirstDigits': '4111',
+                                                                'LastDigits': '1111', 'CardType': 'Visa',
+                                                                'RecurringEnabled': True},
+                                              'CustomerIP': '91.220.121.21'}, 'DeliveryInformation': {
+                          'ShippingMethod': {'Code': None, 'TrackingUrl': None, 'TrackingNumber': None,
+                                             'Comment': None}},
+                           'CustomerDetails': None, 'Origin': 'API', 'AvangateCommission': 4.1, 'OrderFlow': 'REGULAR',
+                           'GiftDetails': None, 'PODetails': None, 'ExtraInformation': None, 'PartnerCode': None,
+                           'PartnerMargin': None, 'PartnerMarginPercent': None, 'ExtraMargin': None,
+                           'ExtraMarginPercent': None,
+                           'ExtraDiscount': None, 'ExtraDiscountPercent': None, 'LocalTime': None, 'TestOrder': False,
+                           'FxRate': 1,
+                           'FxMarkup': 0, 'PayoutCurrency': 'USD', 'DeliveryFinalized': False, 'Errors': None,
+                           'Items': [{
+                               'ProductDetails': {
+                                   'Name': 'Dynamic product',
+                                   'ShortDescription': 'Test description',
+                                   'Tangible': False,
+                                   'IsDynamic': True,
+                                   'ExtraInfo': None,
+                                   'RenewalStatus': False,
+                                   'Subscriptions': None,
+                                   'DeliveryInformation': {
+                                       'Delivery': 'NO_DELIVERY',
+                                       'DownloadFile': None,
+                                       'DeliveryDescription': '',
+                                       'CodesDescription': '',
+                                       'Codes': []}},
+                               'PriceOptions': [
+                                   {
+                                       'Code': 'OPT1_292',
+                                       'Name': 'OPT1',
+                                       'Required': True,
+                                       'Options': [
+                                           {
+                                               'Name': 'Name LR',
+                                               'Value': 'f7f4d3d5546e4f25e8dcdaf8301c34d6',
+                                               'Surcharge': '7.00'}]}],
+                               'Price': {
+                                   'UnitNetPrice': 107,
+                                   'UnitGrossPrice': 107,
+                                   'UnitVAT': 0,
+                                   'UnitDiscount': 0,
+                                   'UnitNetDiscountedPrice': 107,
+                                   'UnitGrossDiscountedPrice': 107,
+                                   'UnitAffiliateCommission': 0,
+                                   'ItemUnitNetPrice': 0,
+                                   'ItemUnitGrossPrice': 0,
+                                   'ItemNetPrice': 0,
+                                   'ItemGrossPrice': 0,
+                                   'VATPercent': 0,
+                                   'HandlingFeeNetPrice': 0,
+                                   'HandlingFeeGrossPrice': 0,
+                                   'Currency': 'usd',
+                                   'NetPrice': 107,
+                                   'GrossPrice': 107,
+                                   'NetDiscountedPrice': 107,
+                                   'GrossDiscountedPrice': 107,
+                                   'Discount': 0,
+                                   'VAT': 0,
+                                   'AffiliateCommission': 0},
+                               'LineItemReference': '69057567c67d17d570523b4ea67fe8770fdbc5bd',
+                               'PurchaseType': 'PRODUCT',
+                               'ExternalReference': '',
+                               'Quantity': 1,
+                               'SKU': None,
+                               'CrossSell': None,
+                               'Trial': None,
+                               'AdditionalFields': None,
+                               'Promotion': None,
+                               'RecurringOptions': None,
+                               'SubscriptionStartDate': None,
+                               'SubscriptionCustomSettings': None}],
+                           'Promotions': [], 'AdditionalFields': None, 'Currency': 'usd', 'NetPrice': 107,
+                           'GrossPrice': 107,
+                           'NetDiscountedPrice': 107, 'GrossDiscountedPrice': 107, 'Discount': 0, 'VAT': 0,
+                           'AffiliateCommission': 0,
+                           'CustomParameters': None
+                           }}
+order_params_test = {
+    "Country": "us",
+    "Currency": "USD",
+    "CustomerIP": "91.220.121.21",
+    "ExternalReference": "REST_API_AVANGTE",
+    "Language": "en",
+    "Source": "testAPI.com",
+    "BillingDetails": {
+        "Address1": "Test Address",
+        "City": "LA",
+        "State": "California",
+        "CountryCode": "US",
+        "Email": "testcustomer@2Checkout.com",
+        "FirstName": "Customer",
+        "LastName": "2Checkout",
+        "Zip": "12345"
+    },
+    "Items": [
+        {
+            "Name": "Dynamic product",
+            "Description": "Test description",
+            "Quantity": 1,
+            "IsDynamic": True,
+            "Tangible": False,
+            "PurchaseType": "PRODUCT",
+            "CrossSell": {
+                "CampaignCode": "CAMPAIGN_CODE",
+                "ParentCode": "MASTER_PRODUCT_CODE"
+            },
+            "Price": {
+                "Amount": 100,
+                "Type": "CUSTOM"
+            },
+            "PriceOptions": [
+                {
+                    "Name": "OPT1",
+                    "Options": [
+                        {
+                            "Name": "Name LR",
+                            "Value": "Value LR",
+                            "Surcharge": 7
+                        }
+                    ]
+                }
+            ],
+            "RecurringOptions": {
+                "CycleLength": 2,
+                "CycleUnit": "DAY",
+                "CycleAmount": 12.2,
+                "ContractLength": 3,
+                "ContractUnit": "DAY"
+            }
+        }
+    ],
+    "PaymentDetails": {
+        "Type": "CC",
+        "Currency": "USD",
+        "CustomerIP": "91.220.121.21",
+        "PaymentMethod": {
+            "CardNumber": "4111111111111111",
+            "CardType": "VISA",
+            "Vendor3DSReturnURL": "www.success.com",
+            "Vendor3DSCancelURL": "www.fail.com",
+            "ExpirationYear": "2044",
+            "ExpirationMonth": "12",
+            "CCID": "123",
+            "HolderName": "John Doe",
+            "RecurringEnabled": True,
+            "HolderNameTime": 1,
+            "CardNumberTime": 1
+        }
     }
 }
+json_encoded_convert_plus_parameters = '{"merchant":"' \
+                                       + config.TWOCHECKOUT_TEST_MERCHANT_ID \
+                                       + '","dynamic":1,"src":"DJANGO",' \
+                                         '"return-url":"https:\/\/google.com",' \
+                                         '"return-type":"redirect",' \
+                                         '"expiration":1617189603,"order-ext-ref":292,' \
+                                         '"customer-ext-ref":"example@example.com",' \
+                                         '"currency":"GBP","test":"1","language":"en",' \
+                                         '"prod":"test site","price":"71.03","qty":"1",' \
+                                         '"type":"PRODUCT","tangible":"0",' \
+                                         '"ship-name":"John Doe","ship-country":"US",' \
+                                         '"ship-state":"AL",' \
+                                         '"ship-email":"example@example.com",' \
+                                         '"ship-address":"Example","ship-address2":"",' \
+                                         '"ship-city":"Example","name":"John Doe",' \
+                                         '"phone":"756852919","country":"US","state":"AL",' \
+                                         '"email":"example@example.com",' \
+                                         '"address":"Example","address2":"",' \
+                                         '"city":"Example","zip":"35242","company-name":""} '
 
-class TwocheckoutTestCase(unittest.TestCase):
+ipn_payload = {
+    'GIFT_ORDER': '0',
+    'SALEDATE': '2021-04-08 16:29:38',
+    'PAYMENTDATE': '2021-04-08 16:29:42',
+    'REFNO': '148998082',
+    'REFNOEXT': 'REST_API_AVANGTE',
+    'SHOPPER_REFERENCE_NUMBER': '',
+    'ORDERNO': '8978',
+    'ORDERSTATUS': 'COMPLETE',
+    'PAYMETHOD': 'Visa/MasterCard',
+    'PAYMETHOD_CODE': 'CCVISAMC',
+    'FIRSTNAME': 'Customer',
+    'LASTNAME': '2Checkout',
+    'COMPANY': '',
+    'REGISTRATIONNUMBER': '',
+    'FISCALCODE': '',
+    'TAX_OFFICE': '',
+    'CBANKNAME': '',
+    'CBANKACCOUNT': '',
+    'ADDRESS1': 'Test Address',
+    'ADDRESS2': '',
+    'CITY': 'LA',
+    'STATE': 'California',
+    'ZIPCODE': '12345',
+    'COUNTRY': 'United States of America',
+    'COUNTRY_CODE': 'us',
+    'PHONE': '',
+    'FAX': '',
+    'CUSTOMEREMAIL': 'testcustomer@2Checkout.com',
+    'FIRSTNAME_D': 'Customer',
+    'LASTNAME_D': '2Checkout',
+    'COMPANY_D': '',
+    'ADDRESS1_D': 'Test Address',
+    'ADDRESS2_D': '',
+    'CITY_D': 'LA',
+    'STATE_D': 'California',
+    'ZIPCODE_D': '12345',
+    'COUNTRY_D': 'United States of America',
+    'COUNTRY_D_CODE': 'us',
+    'PHONE_D': '',
+    'EMAIL_D': 'testcustomer@2Checkout.com',
+    'IPADDRESS': '91.220.121.21',
+    'IPCOUNTRY': 'Romania',
+    'COMPLETE_DATE': '2021-04-08 16:29:48',
+    'TIMEZONE_OFFSET': 'GMT+03:00',
+    'CURRENCY': 'USD',
+    'LANGUAGE': 'en',
+    'ORDERFLOW': 'REGULAR',
+    'IPN_PID[]': '35144095',
+    'IPN_PNAME[]': 'Dynamic product',
+    'IPN_PCODE[]': '',
+    'IPN_EXTERNAL_REFERENCE[]': '',
+    'IPN_INFO[]': '',
+    'IPN_QTY[]': '1',
+    'IPN_PRICE[]': '107.00',
+    'IPN_VAT[]': '0.00',
+    'IPN_VAT_RATE[]': '0.00',
+    'IPN_VER[]': '1',
+    'IPN_DISCOUNT[]': '0.00',
+    'IPN_PROMOTION_CATEGORY[]': '',
+    'IPN_PROMONAME[]': '',
+    'IPN_PROMOCODE[]': '',
+    'IPN_ORDER_COSTS[]': '0',
+    'IPN_SKU[]': '',
+    'IPN_PARTNER_CODE': '',
+    'IPN_PGROUP[]': '0',
+    'IPN_PGROUP_NAME[]': '',
+    'MESSAGE_ID': '250833683479',
+    'MESSAGE_TYPE': 'COMPLETE',
+    'IPN_LICENSE_PROD[]': '35144095',
+    'IPN_LICENSE_TYPE[]': 'REGULAR',
+    'IPN_LICENSE_REF[]': '9WITYHQ6NF',
+    'IPN_LICENSE_EXP[]': '2021-04-10 16:29:42',
+    'IPN_LICENSE_START[]': '2021-04-08 16:29:42',
+    'IPN_LICENSE_LIFETIME[]': 'NO',
+    'IPN_LICENSE_ADDITIONAL_INFO[]': '',
+    'IPN_DELIVEREDCODES[]': '',
+    'IPN_DOWNLOAD_LINK': '',
+    'IPN_TOTAL[]': '107.00',
+    'IPN_TOTALGENERAL': '107.00',
+    'IPN_SHIPPING': '0.00',
+    'IPN_SHIPPING_TAX': '0.00',
+    'AVANGATE_CUSTOMER_REFERENCE': '884855078',
+    'EXTERNAL_CUSTOMER_REFERENCE': '',
+    'IPN_PARTNER_MARGIN_PERCENT': '0.00',
+    'IPN_PARTNER_MARGIN': '0.00',
+    'IPN_EXTRA_MARGIN': '0.00',
+    'IPN_EXTRA_DISCOUNT': '0.00',
+    'IPN_COUPON_DISCOUNT': '0.00',
+    'IPN_LINK_SOURCE': 'testAPI.com',
+    'IPN_COMMISSION': '4.1015',
+    'REFUND_TYPE': '',
+    'IPN_PRODUCT_OPTIONS_35144095_TEXT[]': 'Name LR',
+    'IPN_PRODUCT_OPTIONS_35144095_VALUE[]': 'f21a6009c31851ab5166190e353012bd',
+    'IPN_PRODUCT_OPTIONS_35144095_OPTIONAL_VALUE[]': 'f21a6009c31851ab5166190e353012bd',
+    'IPN_PRODUCT_OPTIONS_35144095_PRICE[]': '7.00',
+    'IPN_PRODUCT_OPTIONS_35144095_OPERATOR[]': 'ADD',
+    'IPN_PRODUCT_OPTIONS_35144095_USAGE[]': 'PREPAID',
+    'CHARGEBACK_RESOLUTION': 'NONE',
+    'CHARGEBACK_REASON_CODE': '',
+    'TEST_ORDER': '1',
+    'IPN_ORDER_ORIGIN': 'API',
+    'FRAUD_STATUS': 'APPROVED',
+    'CARD_TYPE': 'visa',
+    'CARD_LAST_DIGITS': '1111',
+    'CARD_EXPIRATION_DATE': '12/22',
+    'GATEWAY_RESPONSE': 'Approved',
+    'IPN_DATE': '20210408185911',
+    'FX_RATE': '1',
+    'FX_MARKUP': '0',
+    'PAYABLE_AMOUNT': '102.90',
+    'PAYOUT_CURRENCY': 'USD',
+    'VENDOR_CODE': '250111206876',
+    'PROPOSAL_ID': '',
+    'HASH': '8d05499f0933c2e07c8599ff3a2e5338'
+}
+
+
+class CplusTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        super(CplusTestCase, self).setUp()
+
+
+class CplusSignatureTest(CplusTestCase):
+    cplus = None
+
     def setUp(self):
-        super(TwocheckoutTestCase, self).setUp()
+        super(CplusSignatureTest, self).setUp()
+        self.cplus = twocheckout.CplusSignature()
 
-        twocheckout.Api.credentials({
-            'username': 'CREDENTIALS_HERE',
-            'password': 'CREDENTIALS_HERE'
-        })
+    def test_1_get_signature_without_token_expiration(self):
+        self.assertEqual(64, len(self.cplus.get_signature(
+            config.TWOCHECKOUT_TEST_MERCHANT_ID,
+            config.TWOCHECKOUT_TEST_BUYLINK_SECRET_WORD,
+            json_encoded_convert_plus_parameters)))
 
-        twocheckout.Api.auth_credentials({
-            'private_key': 'CREDENTIALS_HERE',
-            'seller_id': 'CREDENTIALS_HERE'
-        })
+    def test_1_get_signature_with_token_expiration(self):
+        self.assertEqual(64, len(self.cplus.get_signature(
+            config.TWOCHECKOUT_TEST_MERCHANT_ID,
+            config.TWOCHECKOUT_TEST_BUYLINK_SECRET_WORD,
+            json_encoded_convert_plus_parameters,
+            1000)))
 
 
-class AuthorizationTest(TwocheckoutTestCase):
+class ApiTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        super(ApiTestCase, self).setUp()
+
+
+class OrderTest(ApiTestCase):
+    order = None
+
+    # setup auth headers
     def setUp(self):
-        super(AuthorizationTest, self).setUp()
+        super(OrderTest, self).setUp()
+        self.order = twocheckout.Order(auth_params)
 
-## Place order test
-    def test_1_auth(self):
-        params = EXAMPLE_AUTH
-        try:
-            result = twocheckout.Charge.authorize(params)
+    # Get order test
+    def test_1_order_get(self):
+        self.assertEqual(order_get_test, self.order.get(order_transaction_id))
 
-            ## use OrderNumber for sale_id for next tests
-            print("OrderNumber: ", result.orderNumber)
-            self.assertEqual(result.responseCode, "APPROVED")
-        except TwocheckoutError as error:
-            self.assertEqual(error.msg, "Unauthorized")
+    # Create order test
+    def test_2_order_create(self):
+        self.assertEqual('REST_API_AVANGTE', self.order.create(order_params_test)['body']['ExternalReference'])
 
-class SaleTest(TwocheckoutTestCase):
+
+class IpnHelperTestCase(unittest.TestCase):
+    ipn = None
+
     def setUp(self):
-        super(SaleTest, self).setUp()
+        super(IpnHelperTestCase, self).setUp()
+        self.ipn = twocheckout.IpnHelper(config.TWOCHECKOUT_TEST_MERCHANT_SECRET_KEY)
 
-    def test_1_find_sale(self):
-        try:
-            sale = twocheckout.Sale.find(EXAMPLE_SALE)
-            self.assertEqual(int(sale.sale_id), 250353589267)
-        except TwocheckoutError as error:
-            self.assertEqual(error.message, "Unable to find record.")
+    def test_1_ipn_hash(self):
 
-    def test_2_list_sale(self):
-        params = {'pagesize': 2}
-        list = twocheckout.Sale.list(params)
-        self.assertEqual(len(list), 2)
+        self.assertEqual(True, self.ipn.is_valid(ipn_payload))
 
-    def test_3_refund_sale(self):
-        try:
-            sale = twocheckout.Sale.find(EXAMPLE_SALE)
-            result = sale.refund(EXAMPLE_REFUND)
-            self.assertEqual(result.message, "refund added to invoice")
-        except TwocheckoutError as error:
-            self.assertEqual(error.message, "Amount greater than remaining balance on invoice.")
+    def test_2_ipn_calculate_response(self):
+        expected = self.calculate_ipn_response(ipn_payload)
+        received = self.ipn.calculate_ipn_response(ipn_payload)
+        
+        self.assertEqual(expected, received)
 
-## If you have already run test_3 then test_4 will fail for the same sale_id.
-    def test_4_refund_invoice(self):
-        try:
-            sale = twocheckout.Sale.find(EXAMPLE_SALE)
-            invoice = sale.invoices[0]
-            result = invoice.refund(EXAMPLE_REFUND)
-            self.assertEqual(result.response_message, "refund added to invoice")
-        except TwocheckoutError as error:
-            self.assertEqual(error.message, "Amount greater than remaining balance on invoice.")
+    def calculate_ipn_response(self, params):
+        now = NOW
+        result = ''
+        ipn_response = {'IPN_PID': [params['IPN_PID[]']],
+                        'IPN_NAME': [params['IPN_PNAME[]']],
+                        'IPN_DATE': params['IPN_DATE'],
+                        'DATE': now.strftime('%Y%m%d%H%M%S')}
 
-    def test_5_refund_lineitem(self):
-        try:
-            sale = twocheckout.Sale.find(EXAMPLE_SALE)
-            invoice = sale.invoices[0]
-            lineitem = invoice.lineitems[0]
-            result = lineitem.refund(EXAMPLE_REFUND)
-            self.assertEqual(result.response_message, "lineitem refunded")
-        except TwocheckoutError as error:
-            self.assertEqual(error.message, "Lineitem amount greater than remaining balance on invoice.")
+        for param in ipn_response:
+            if type(ipn_response[param]) is list:
+                result += self.expand(ipn_response[param])
+            else:
+                size = len(ipn_response[param])
+                result += str(size) + ipn_response[param]
 
-    def test_6_stop_sale(self):
-        sale = twocheckout.Sale.find(EXAMPLE_SALE)
-        result = sale.stop()
-        self.assertEqual(result.response_message, "No active recurring lineitems")
+        return '<EPAYMENT>' + ipn_response['DATE'] + '|' + hmac.new(
+            config.TWOCHECKOUT_TEST_MERCHANT_SECRET_KEY.encode(), result.encode(),
+            'md5').hexdigest() + '</EPAYMENT>'
 
-    def test_7_stop_invoice(self):
-        sale = twocheckout.Sale.find(EXAMPLE_SALE)
-        invoice = sale.invoices[0]
-        result = invoice.stop()
-        self.assertEqual(result.response_message, "No active recurring lineitems")
-
-## If you have already run "test_7_stop_invoice" then "test_8_stop_sale_lineitem" will fail for the same sale_id.
-    def test_8_stop_sale_lineitem(self):
-        sale = twocheckout.Sale.find(EXAMPLE_SALE)
-        invoice = sale.invoices[0]
-        try:
-            lineitem = invoice.lineitems[0]
-            result = lineitem.stop()
-        except TwocheckoutError as error:
-            self.assertEqual(error.message, "Lineitem is not scheduled to recur.")
-
-    def test_9_comment(self):
-        sale = twocheckout.Sale.find(EXAMPLE_SALE)
-        result = sale.comment(EXAMPLE_COMMENT)
-        self.assertEqual(result.response_message, "Created comment successfully.")
-
-    def test_10_ship(self):
-        try:
-            sale = twocheckout.Sale.find(EXAMPLE_SALE)
-            result = sale.ship(EXAMPLE_SHIP)
-        except TwocheckoutError as error:
-            self.assertEqual(error.message, "Sale already marked shipped.")
-
-class ProductTest(TwocheckoutTestCase):
-    def setUp(self):
-        super(ProductTest, self).setUp()
-
-    def test_1_create(self):
-        result = twocheckout.Product.create(EXAMPLE_PRODUCT)
-        self.assertEqual(result.response_message, "Product successfully created.")
-        EXAMPLE_PRODUCT['product_id'] = result.product_id
-
-    def test_2_find(self):
-        product = twocheckout.Product.find(EXAMPLE_PRODUCT)
-        self.assertEqual(product.name, "Python Example Product")
-
-    def test_3_update(self):
-        product = twocheckout.Product.find(EXAMPLE_PRODUCT)
-        EXAMPLE_PRODUCT['name'] = "Updated Name"
-        product = product.update(EXAMPLE_PRODUCT)
-        self.assertEqual(product.name, "Updated Name")
-
-    def test_4_delete(self):
-        product = twocheckout.Product.find(EXAMPLE_PRODUCT)
-        result = product.delete(EXAMPLE_PRODUCT)
-        self.assertEqual(result.response_message, "Product successfully deleted.")
-
-    def test_5_list(self):
-        params = {'pagesize': 2}
-        list = twocheckout.Product.list(params)
-        self.assertEqual(len(list), 2)
-
-class CompanyTest(TwocheckoutTestCase):
-    def setUp(self):
-        super(CompanyTest, self).setUp()
-
-    def test_1_retrieve(self):
-        company = twocheckout.Company.retrieve()
-        self.assertEqual(company.vendor_id, "250111206876")
-
-class ContactTest(TwocheckoutTestCase):
-    def setUp(self):
-        super(ContactTest, self).setUp()
-
-    def test_1_create(self):
-        contact = twocheckout.Contact.retrieve()
-        self.assertEqual(contact.vendor_id, "250111206876")
-
-class PaymentTest(TwocheckoutTestCase):
-    def setUp(self):
-        super(PaymentTest, self).setUp()
-
-    def test_1_pending(self):
-        payment = twocheckout.Payment.pending()
-        self.assertEqual(payment.release_level, "300")
-
-    def test_2_list(self):
-        payments = twocheckout.Payment.list()
-        self.assertEqual(len(payments), 0)
-
-class PassbackTest(TwocheckoutTestCase):
-    def setUp(self):
-        super(PassbackTest, self).setUp()
-
-    def test_1_check(self):
-        params = EXAMPLE_PASSBACK
-        result = twocheckout.Passback.check(params)
-        self.assertEqual(result.response_code, "SUCCESS")
-
-class NotificationTest(TwocheckoutTestCase):
-    def setUp(self):
-        super(NotificationTest, self).setUp()
-
-    def test_1_check(self):
-        params = EXAMPLE_NOTIFICATION
-        result = twocheckout.Notification.check(params)
-        self.assertEqual(result.response_code, "SUCCESS")
-
-if __name__ == '__main__':
-    unittest.main()
+    def expand(self, val_list):
+        result = ''
+        for val in val_list:
+            size = len(val.lstrip())
+            result += str(size) + str(val.lstrip())
+        return result
