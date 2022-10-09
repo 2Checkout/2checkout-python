@@ -1,4 +1,4 @@
-2Checkout Python Library
+DEPRECATED!!! This SDK can only be used with the legacy 2Checkout platform which is depreciated. Please use [2checkout-python-sdk](https://github.com/2Checkout/2checkout-python-sdk) with the current 2Checkout platform.
 =====================
 
 This library provides developers with a simple set of bindings to the 2Checkout purchase routine, Instant Notification Service and Back Office API.
